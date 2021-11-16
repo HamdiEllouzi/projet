@@ -1,25 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
-
+import SignInSide from './component/login-componet';
+import SignUp from './component/sign-up';
+import { useState } from 'react';
+import {auth } from './firebase-config';
+import Home from './component/home';
+import {onAuthStateChanged} from 'firebase/auth'
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [singup, setSingup] = useState(true);
+  const [user, setUser] = useState({});
+  const switchPage = () =>{
+    setSingup(!singup)
+  }
+  onAuthStateChanged( auth ,(currentUser)=>{
+    setUser(currentUser)
+  })
+  if(user === null){
+  return (singup)?<SignInSide singup= {switchPage}/>:<SignUp singup= {switchPage}/>
+  }else return <Home/>
 }
 
 export default App;
