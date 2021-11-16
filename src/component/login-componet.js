@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { register } from './service';
+import { Login, register } from './service';
 const theme = createTheme();
 
 export default function SignInSide({singup}) {
@@ -23,7 +23,7 @@ export default function SignInSide({singup}) {
     // email: data.get('email'),
     //: data.get('password'),
    // });
-
+    Login(data.get('email'),data.get('password'))
   };
 
   return (

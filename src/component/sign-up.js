@@ -33,7 +33,7 @@ export default function SignUp({singup}) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     register(data.get('email'),data.get('password'))
-    .then(console.log('hi'))
+    .then(singup())
     .catch((error)=> setError(error))
   };
 
