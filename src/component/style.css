@@ -1,0 +1,34 @@
+.body{
+    height: 100vh;
+    width: 100%;
+    background-image: url('../images/banner.jpg');
+}
+.navbar {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-family: Helvetica;
+    font-weight: 300;
+}
+
+.navbar__title {
+    margin-right: auto;
+    font-size: 150%;
+    padding: 12px 16px; 
+}
+
+.navbar__item {
+    padding: 16px 16px;
+    cursor: pointer;
+    vertical-align: middle;
+    color: black;
+}
+.navbar__item:hover {
+    color: blue;
+}
+.nav__img{
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border-radius: 50%;
+}

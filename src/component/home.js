@@ -1,9 +1,10 @@
-import { logout } from "./service";
+import { NavBar } from "./header";
+import './style.css'
 
-export default function Home(){
+export default function Home({user}){
     return (
-        <div>hi
-            <button onClick={()=>logout()}>signout</button>
+        <div className='body'>
+            <NavBar user = {user}/>
         </div>
     )
     

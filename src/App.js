@@ -1,22 +1,29 @@
 import './App.css';
 import SignInSide from './component/login-componet';
 import SignUp from './component/sign-up';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import {auth } from './firebase-config';
 import Home from './component/home';
 import {onAuthStateChanged} from 'firebase/auth'
+import { useNavigate  ,Route, Routes,useRoutes ,useLocation } from "react-router-dom";
+
 function App() {
-  const [singup, setSingup] = useState(true);
+  let location = useLocation();
   const [user, setUser] = useState({});
-  const switchPage = () =>{
-    setSingup(!singup)
-  }
+  const navigate = useNavigate ()
   onAuthStateChanged( auth ,(currentUser)=>{
     setUser(currentUser)
   })
+  let element = useRoutes([
+    {  path:'/', element: <Home user= {user}/> },
+    {  path:'/Sign-in', element: <SignInSide/> },
+    {  path:'/Sing-up', element: <SignUp /> },
+  ]);
+useEffect(() => {
   if(user === null){
-  return (singup)?<SignInSide singup= {switchPage}/>:<SignUp singup= {switchPage}/>
-  }else return <Home/>
+    navigate('Sign-in') 
+  }
+}, [user,location.pathname]);
+  return element
 }
-
 export default App;

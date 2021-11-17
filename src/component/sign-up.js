@@ -2,7 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -12,6 +11,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { register } from './service';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -27,16 +27,20 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignUp({singup}) {
+export default function SignUp() {
     const [error, setError] = useState('');
+    const navigate = useNavigate()
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    register(data.get('email'),data.get('password'))
-    .then(singup())
+    console.log(data.get('firstName'));
+    register(data.get('email'),data.get('password'),data.get('firstName'),data.get('lastName'))
+    .then()
     .catch((error)=> setError(error))
   };
-
+  const redirect =()=>{
+    navigate('/Sign-in')
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -55,7 +59,7 @@ export default function SignUp({singup}) {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" Validate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -113,7 +117,7 @@ export default function SignUp({singup}) {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2" onClick={() => singup()}>
+                <Link href="#" variant="body2" onClick={() => redirect()}>
                   Already have an account? Sign in
                 </Link>
               </Grid>

@@ -11,21 +11,22 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Login, register } from './service';
+import { Login } from './service';
+import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
 
 export default function SignInSide({singup}) {
+  const navigate = useNavigate ()
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    //console.log({
-    // email: data.get('email'),
-    //: data.get('password'),
-   // });
-    Login(data.get('email'),data.get('password'))
+    Login(data.get('email'),data.get('password')).then(()=>{
+      navigate('/')
+    })
   };
-
+const redirect =()=>{
+  navigate('/Sing-up')
+}
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -100,7 +101,7 @@ export default function SignInSide({singup}) {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2" onClick={()=>singup()}>
+                  <Link href="#" variant="body2" onClick={()=> redirect()}>
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
