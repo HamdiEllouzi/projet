@@ -21,7 +21,9 @@ function App() {
   ]);
 useEffect(() => {
   if(user === null){
-    navigate('Sign-in') 
+    if(location.pathname !== "/Sign-in" && location.pathname !== "/Sing-up" ){
+    navigate('Sign-in')
+    }
   }
 }, [user,location.pathname]);
   return element
