@@ -8,9 +8,11 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import menPic from '../images/men.png'
 import { logout } from "./service";
+import { Link,useNavigate } from "react-router-dom";
 
 export const NavBar = () => {
     const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate ()
   const anchorRef = React.useRef(null);
 
   const handleToggle = () => {
@@ -45,7 +47,7 @@ export const NavBar = () => {
   }, [open]);
     return(
       <header className='navbar'>
-        <div className='navbar__title navbar__item'>Cutco</div>
+        <div className='navbar__title navbar__item' onClick={()=>navigate('/')}>Home</div>
         <div className='navbar__item'>About Us</div>
         <div className='navbar__item'>Contact</div>
         <div className='navbar__item'>
@@ -83,7 +85,7 @@ export const NavBar = () => {
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
                   >
-                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                    <MenuItem onClick={handleClose}><Link to='/Profile'> Profile</Link></MenuItem>
                     <MenuItem onClick={handleClose}>My account</MenuItem>
                     <MenuItem onClick={logout}>Logout</MenuItem>
                   </MenuList>

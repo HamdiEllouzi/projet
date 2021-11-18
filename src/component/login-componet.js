@@ -12,17 +12,19 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Login } from './service';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 const theme = createTheme();
 
-export default function SignInSide({singup}) {
+export default function SignInSide() {
   const navigate = useNavigate ()
+  let location = useLocation();
+  let from = location.state?.from?.pathname || "/";
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     Login(data.get('email'),data.get('password')).then(()=>{
-      navigate('/')
-    })
+      navigate(from, { replace: true })
+    }).catch((e)=>{console.log(e);})
   };
 const redirect =()=>{
   navigate('/Sing-up')

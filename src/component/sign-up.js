@@ -11,31 +11,20 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { register } from './service';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { useNavigate } from 'react-router-dom';
+
 
 const theme = createTheme();
 
 export default function SignUp() {
-    const [error, setError] = useState('');
-    const navigate = useNavigate()
+
+  const [error, setError] = useState('');
+  const navigate = useNavigate()
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log(data.get('firstName'));
     register(data.get('email'),data.get('password'),data.get('firstName'),data.get('lastName'))
-    .then()
+    .then(navigate("/"))
     .catch((error)=> setError(error))
   };
   const redirect =()=>{
@@ -124,7 +113,6 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );

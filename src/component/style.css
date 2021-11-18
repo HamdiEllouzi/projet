@@ -1,8 +1,14 @@
-.body{
+.body {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100%;
-    background-image: url('../images/banner.jpg');
+    background-image: url("../images/banner.jpg");
 }
+.profile {
+    flex: 1;
+}
+
 .navbar {
     display: flex;
     align-items: center;
@@ -14,7 +20,7 @@
 .navbar__title {
     margin-right: auto;
     font-size: 150%;
-    padding: 12px 16px; 
+    padding: 12px 16px;
 }
 
 .navbar__item {
@@ -22,13 +28,22 @@
     cursor: pointer;
     vertical-align: middle;
     color: black;
+    z-index: 500;
 }
 .navbar__item:hover {
     color: blue;
 }
-.nav__img{
+.nav__img {
     width: 40px;
     height: 40px;
     background-color: transparent;
     border-radius: 50%;
+}
+.react-reveal {
+    opacity: 0;
+    flex: 1 1 0%;
+    display: flex;
+}
+body {
+    font-family: calibri;
 }

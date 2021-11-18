@@ -1,31 +1,44 @@
 import './App.css';
 import SignInSide from './component/login-componet';
 import SignUp from './component/sign-up';
-import { useState,useEffect } from 'react';
+import { useState } from 'react';
 import {auth } from './firebase-config';
 import Home from './component/home';
 import {onAuthStateChanged} from 'firebase/auth'
-import { useNavigate  ,Route, Routes,useRoutes ,useLocation } from "react-router-dom";
+import { useRoutes ,useLocation,Navigate } from "react-router-dom";
+import { Profile } from './component/profile';
 
 function App() {
-  let location = useLocation();
+
   const [user, setUser] = useState({});
-  const navigate = useNavigate ()
   onAuthStateChanged( auth ,(currentUser)=>{
-    setUser(currentUser)
-  })
+  setUser(currentUser)
+})
+  let location = useLocation();
+
   let element = useRoutes([
-    {  path:'/', element: <Home user= {user}/> },
-    {  path:'/Sign-in', element: <SignInSide/> },
-    {  path:'/Sing-up', element: <SignUp /> },
+    {  path:'/' ,element: <RequireAuth user= {user}><Home user= {user}/></RequireAuth> ,children :[
+        { path:'/Profile', element:<NotAuth user={user}><Profile/></NotAuth>}
+    ]},
+    {  path:'/Sign-in', element:<NotAuth user={user}><SignInSide/></NotAuth>  },
+    {  path:'/Sing-up', element: <NotAuth user={user}><SignUp /> </NotAuth>},
   ]);
-useEffect(() => {
-  if(user === null){
-    if(location.pathname !== "/Sign-in" && location.pathname !== "/Sing-up" ){
-    navigate('Sign-in')
+  
+  function RequireAuth({ children }) {
+    if (!user) {
+      return <Navigate to="/Sign-in" state={{ from: location }} />;
     }
+    return children;
   }
-}, [user,location.pathname]);
+  function NotAuth({ children }) {
+    if (user) {
+      return <Navigate to="/" />;
+    }
+    return children;
+  }
+
+
   return element
-}
+  }
+
 export default App;
