@@ -5,6 +5,10 @@ import {
     updateProfile
 } from 'firebase/auth'
 import { auth} from '../firebase-config';
+import { useDispatch } from 'react-redux';
+import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
+
+
 export const Login = (email, password) => {
     return new Promise((resolve, reject) => {
         signInWithEmailAndPassword(auth, email, password).then((currentUser) => {
@@ -27,5 +31,15 @@ export const register = (email, password,firstName,lastName) => {
             reject(error)
         })
     })
+}
+export const storeUpdate = (currentUser)=>{
 
+
+}
+export const upProfile=(user,imgUrl)=>{
+    return new Promise((resolve, reject)=>{
+        updateProfile(user, {
+            photoURL: imgUrl,
+          }).then(e=>resolve(e)).catch(e=>reject(e))   
+    })
 }

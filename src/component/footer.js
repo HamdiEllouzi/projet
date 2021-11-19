@@ -2,7 +2,7 @@ import "./footer.css"
 function Footer() {
     return (
         <div className='footer'>
-            <footer class="footer-distributed">
+            <footer className="footer-distributed">
             </footer>
         </div>
     )
