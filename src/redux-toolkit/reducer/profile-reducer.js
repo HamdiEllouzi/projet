@@ -1,7 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  profile:{}
+  profile:{
+    uid:'',
+    email:'',
+    displayName:'',
+    photoURL:'',
+    emailVerified:false ,
+    phoneNumber:'',
+  }
+  
 }
 
 export const profileSlice = createSlice({
@@ -10,6 +18,9 @@ export const profileSlice = createSlice({
   reducers: {
     addProfile : (state,payload) =>{
         state.profile = payload.payload
+    },
+    editProfile :  (state,payload) =>{
+        state.profile.photoURL = payload.payload.photoURL || state.profile.photoURL
     }
   },
 })

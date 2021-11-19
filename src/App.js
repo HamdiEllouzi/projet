@@ -4,16 +4,16 @@ import SignUp from './component/sign-up';
 import { useState,useEffect } from 'react';
 import {auth } from './firebase-config';
 import Home from './component/home';
-import {onAuthStateChanged,getAuth,onIdTokenChanged} from 'firebase/auth'
+import {onAuthStateChanged,getAuth} from 'firebase/auth'
 import { useRoutes ,useLocation,Navigate } from "react-router-dom";
 import { Profile } from './component/profile';
 import { useDispatch } from 'react-redux';
 import { addProfile } from './redux-toolkit/reducer/profile-reducer';
+import { StoreUpdate } from './component/service';
 
 function App() {
   const dispatch = useDispatch()
   const [user, setUser] = useState({});
-  
   onAuthStateChanged( auth ,(currentUser)=>{
   setUser(currentUser)
   currentUser&&dispatch(addProfile({
