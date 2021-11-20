@@ -3,10 +3,9 @@ import IconButton from '@mui/material/IconButton';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { styled } from '@mui/material/styles';
 import uuid from 'react-uuid'
-import { useState } from "react";
 import { ref,uploadBytes,getDownloadURL  } from "@firebase/storage";
 import { storage } from "../firebase-config";
-import { upProfile } from "./service";
+import { storeUpdate,upProfile } from "../service/service";
 import { useSelector } from "react-redux";
 
 const Input = styled('input')({
@@ -19,9 +18,8 @@ const uploadImg = (e) =>{
 const imgId = uuid()
 const storageRef = ref(storage, 'profile/'+ imgId)
 const upload = uploadBytes(storageRef, e.target.files[0]).then((snap)=>{
-    console.log(snap);
     getDownloadURL(storageRef).then(e=>{
-        upProfile(user,e).then((e)=>{console.log(e)})
+        upProfile(user,e).then((e)=>{storeUpdate()})
     })
 }).catch((e)=>console.log(e))
 
@@ -43,8 +41,8 @@ const upload = uploadBytes(storageRef, e.target.files[0]).then((snap)=>{
                     <div className="user-data">
                         <h2>{profile.displayName}</h2>
                         <span className="post-label">Admin</span>
-                        <p>Founder and CEO at <strong>NewSpot</strong><br />
-                            Boston, MA, United States
+                        <p> Lorem ipsum dolor sit amet <strong>adipisicing</strong><br />
+                            aliqua. Ut enim
                         </p>
                     </div>
                 </div>
@@ -61,7 +59,7 @@ const upload = uploadBytes(storageRef, e.target.files[0]).then((snap)=>{
                         <div className="bio-box">
                             <div className="heading">
                                 <p>Professional Bio
-                                    <label>10 Year Experience</label></p>
+                                    <label>2 Year Experience</label></p>
                             </div>
                             <div className="desc">
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -78,9 +76,9 @@ const upload = uploadBytes(storageRef, e.target.files[0]).then((snap)=>{
                                 <li>Contact No</li>
                             </ul>
                             <ul className="ul-second">
-                                <li>8 March 1997</li>
-                                <li>Jamanagar</li>
-                                <li>California</li>
+                                <li>25 March 1990</li>
+                                <li>tunisia</li>
+                                <li>sousse</li>
                                 <li>9900990087</li>
                             </ul>
                         </div>

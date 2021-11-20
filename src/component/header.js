@@ -6,15 +6,15 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import menPic from '../images/men.png'
-import { logout } from "./service";
+import { logout } from "../service/service";
 import { Link,useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export const NavBar = () => {
-    const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate ()
   const anchorRef = React.useRef(null);
-
+  const { profile } = useSelector((state) => state.profile)
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -59,7 +59,7 @@ export const NavBar = () => {
           aria-haspopup="true"
           onClick={handleToggle}
         >
-          <img className='nav__img' src={menPic} alt='men'/>
+          <img className='nav__img' src={profile.photoURL} alt='men'/>
         </div>
         <Popper
           open={open}

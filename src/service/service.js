@@ -1,8 +1,7 @@
 import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, updateProfile, getAuth } from 'firebase/auth'
 import { auth } from '../firebase-config';
-import { useDispatch } from 'react-redux';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
-
+import { profileStore } from '../redux-toolkit/store/profile-store';
 
 export const Login = (email, password) => {
     return new Promise((resolve, reject) => {
@@ -27,17 +26,16 @@ export const register = (email, password, firstName, lastName) => {
         })
     })
 }
-export const StoreUpdate = () => {
-    const dispatch = useDispatch()
-    const userInfo = getAuth().currentUser
-    /*dispatch(addProfile({
+export const storeUpdate = () => {
+    const currentUser = getAuth().currentUser
+    profileStore.dispatch(addProfile({
         uid: currentUser.uid,
         email: currentUser.email,
         displayName: currentUser.displayName,
         photoURL: currentUser.photoURL || '',
         emailVerified: currentUser.emailVerified,
         phoneNumber: currentUser.phoneNumber || '',
-    }))*/
+    }))
 }
 export const upProfile = (user, imgUrl) => {
     return new Promise((resolve, reject) => {

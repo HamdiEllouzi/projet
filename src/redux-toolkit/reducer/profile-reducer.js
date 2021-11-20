@@ -20,12 +20,12 @@ export const profileSlice = createSlice({
         state.profile = payload.payload
     },
     editProfile :  (state,payload) =>{
-        state.profile.photoURL = payload.payload.photoURL || state.profile.photoURL
+        
     }
   },
 })
 
-// Action creators are generated for each case reducer function
-export const { addProfile } = profileSlice.actions
+
+export const { addProfile,editProfile } = profileSlice.actions
 
 export default profileSlice.reducer
