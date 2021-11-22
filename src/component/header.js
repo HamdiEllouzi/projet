@@ -48,7 +48,7 @@ export const NavBar = () => {
     return(
       <header className='navbar'>
         <div className='navbar__title navbar__item' onClick={()=>navigate('/')}>Home</div>
-        <div className='navbar__item'>About Us</div>
+        <div className='navbar__item'><Link to='/Chat'>Member Chat</Link></div>
         <div className='navbar__item'>Contact</div>
         <div className='navbar__item'>
         <div
@@ -59,7 +59,10 @@ export const NavBar = () => {
           aria-haspopup="true"
           onClick={handleToggle}
         >
+          <div className='nav-img-bloc'>
           <img className='nav__img' src={profile.photoURL} alt='men'/>
+          {profile.displayName}
+          </div>
         </div>
         <Popper
           open={open}

@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, updateProfile, getAuth } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, updateProfile, updateEmail, updatePassword } from 'firebase/auth'
 import { auth } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
@@ -27,7 +27,7 @@ export const register = (email, password, firstName, lastName) => {
     })
 }
 export const storeUpdate = () => {
-    const currentUser = getAuth().currentUser
+    const currentUser = auth.currentUser
     profileStore.dispatch(addProfile({
         uid: currentUser.uid,
         email: currentUser.email,
@@ -37,10 +37,26 @@ export const storeUpdate = () => {
         phoneNumber: currentUser.phoneNumber || '',
     }))
 }
-export const upProfile = (user, imgUrl) => {
+export const upImgProfile = (user, imgUrl) => {
     return new Promise((resolve, reject) => {
         updateProfile(user, {
             photoURL: imgUrl,
         }).then(e => resolve(e)).catch(e => reject(e))
+    })
+}
+export const upProfile = (user, firstName, lastName, email, newPassword) => {
+    return new Promise((resolve, reject) => {
+        updateProfile(user, {
+            displayName: `${firstName} ${lastName}`,
+        }).then((a) => {  storeUpdate()}).catch(e => reject(e))
+        newPassword&&updatePassword(user, newPassword).then((e) => {
+            console.log('password updated');
+            resolve(e)
+        }).catch((error) => {reject(error) });
+        (user.email !== email) && updateEmail(user, email).then((e) => {
+            console.log('email updated');
+            storeUpdate()
+            resolve(e)
+        }).catch(e => reject(e))
     })
 }

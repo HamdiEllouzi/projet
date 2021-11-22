@@ -33,6 +33,12 @@
 .navbar__item:hover {
     color: blue;
 }
+.nav-img-bloc{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .nav__img {
     width: 40px;
     height: 40px;
