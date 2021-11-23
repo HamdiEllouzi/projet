@@ -1,41 +1,53 @@
 import * as React from 'react';
 import "./chat.css"
 import SendIcon from '@mui/icons-material/Send';
-import { ref, set, onValue , get } from "firebase/database";
+import { ref, onValue , get,push } from "firebase/database";
 import { auth, rtdb, } from '../firebase-config';
-import uuid from 'react-uuid'
 
 const ChatComponet = () => {
     const user = auth.currentUser
-    const uid = uuid()
-    const chatRef = ref(rtdb, 'homeChat/' + uid)
+    const chatRef = ref(rtdb, 'homeChat/')
     const [message, setMessage] = React.useState('')
     const [data, setData] = React.useState(null)
+    const [arrayData, setArrayData] = React.useState(null)
     const handelChange = (event) => {
         setMessage(event.target.value)
     }
-    React.useEffect(() => {
+    const getData=()=>{
+        const tableOfData = []
         get(ref(rtdb, `homeChat/`)).then((snapshot) => {
-            snapshot.exists() && setData(snapshot.val())
+            snapshot.exists() && snapshot.forEach(v=>{
+                tableOfData.push(v.val())
+            })
+        }).then(e =>{
+            setArrayData(tableOfData);
         }).catch((error) => {
             console.error(error);
         });
-    }, [])
+    }
     onValue(ref(rtdb, 'homeChat/'), (snapshot) => {
         const getdata = snapshot.val();
-        (getdata === data) && setData(getdata)
+        if(data !== null){
+            if(Object.keys(getdata).length !== Object.keys(data).length){
+                setData(getdata)
+                getData()
+            }              
+        }else{
+            setData(getdata)
+            getData()
+        }
     });
+
     const onClick = () => {
-        const data = {
+        const msgData = {
             username: user.displayName,
             message: message,
             profile_picture: user.photoURL
         }
-        set(chatRef, data).then(e => {
+        push(chatRef, msgData).then(e => {
             console.log('succes');
         })
     }
-
 
     return (
         <div className="chat">
@@ -47,14 +59,15 @@ const ChatComponet = () => {
                     <div className="chat-box-overlay">
                     </div>
                     <div className="chat-logs">
-                        {data&&Object.keys(data).forEach((value) => {
-                            <div className="chat-msg self" >
+                        {(!arrayData)?<div>loading....</div>:arrayData.map((value,index) => 
+                            <div className={(user.displayName === value.username)?"chat-msg self":"chat-msg user"} key={index}>
                                 <span className="msg-avatar">
-                                    <img src={data[value].profile_picture} />
+                                    <img src={value.profile_picture} />
                                 </span>
-                                <div className="cm-msg-text">{data[value].message}</div>
+                                <div className="cm-msg-text">{value.message}</div>
                             </div>
-                        })
+                            
+                        )
                         }
 
                     </div>
