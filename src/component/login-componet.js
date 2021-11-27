@@ -12,23 +12,23 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Login } from '../service/service';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 const theme = createTheme();
 
 export default function SignInSide() {
-  const navigate = useNavigate ()
+  const navigate = useNavigate()
   let location = useLocation();
   let from = location.state?.from?.pathname || "/";
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    Login(data.get('email'),data.get('password')).then(()=>{
+    Login(data.get('email'), data.get('password')).then(() => {
       navigate(from, { replace: true })
-    }).catch((e)=>{console.log(e);})
+    }).catch((e) => { console.log(e); })
   };
-const redirect =()=>{
-  navigate('/Sing-up')
-}
+  const redirect = () => {
+    navigate('/Sing-up')
+  }
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -103,7 +103,7 @@ const redirect =()=>{
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2" onClick={()=> redirect()}>
+                  <Link href="#" variant="body2" onClick={() => redirect()}>
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

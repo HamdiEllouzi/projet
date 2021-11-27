@@ -1,4 +1,7 @@
-import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, updateProfile, updateEmail, updatePassword } from 'firebase/auth'
+import {
+    createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword,
+    updateProfile, updateEmail, updatePassword
+} from 'firebase/auth'
 import { auth } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
@@ -48,11 +51,11 @@ export const upProfile = (user, firstName, lastName, email, newPassword) => {
     return new Promise((resolve, reject) => {
         updateProfile(user, {
             displayName: `${firstName} ${lastName}`,
-        }).then((a) => {  storeUpdate()}).catch(e => reject(e))
-        newPassword&&updatePassword(user, newPassword).then((e) => {
+        }).then((a) => { storeUpdate() }).catch(e => reject(e))
+        newPassword && updatePassword(user, newPassword).then((e) => {
             console.log('password updated');
             resolve(e)
-        }).catch((error) => {reject(error) });
+        }).catch((error) => { reject(error) });
         (user.email !== email) && updateEmail(user, email).then((e) => {
             console.log('email updated');
             storeUpdate()
