@@ -148,6 +148,7 @@ export const Profile = ({ user }) => {
                                         name='password'
                                         placeholder="Password"
                                         onChange={handleChange('password')}
+                                        size="small"
                                         endAdornment={
                                             <InputAdornment position="end">
                                                 <IconButton
@@ -175,6 +176,7 @@ export const Profile = ({ user }) => {
                                         error={passValidate}
                                         placeholder="Confirme New Password"
                                         onChange={handleChange('cpassword')}
+                                        size="small"
                                         endAdornment={
                                             <InputAdornment position="end">
                                                 <IconButton
@@ -192,7 +194,7 @@ export const Profile = ({ user }) => {
                                 </FormControl>
                             </Grid>
                         </Grid>
-                        <Button type="submit" variant="contained" sx={{ mt: 5, mb: 4 }} >
+                        <Button type="submit" variant="contained"  >
                             Update
                         </Button>
                     </Box>

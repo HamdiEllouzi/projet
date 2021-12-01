@@ -2,9 +2,11 @@ import {
     createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword,
     updateProfile, updateEmail, updatePassword
 } from 'firebase/auth'
-import { auth } from '../firebase-config';
+import { auth,db } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
+import { doc, setDoc,updateDoc } from "firebase/firestore"
+
 
 export const Login = (email, password) => {
     return new Promise((resolve, reject) => {
@@ -23,7 +25,19 @@ export const register = (email, password, firstName, lastName) => {
         createUserWithEmailAndPassword(auth, email, password).then((currentUser) => {
             updateProfile(currentUser.user, {
                 displayName: `${firstName} ${lastName}`,
-            }).then((e) => resolve(e))
+            }).then((e)=>{
+                const userRef = doc(db, 'users', currentUser.user.uid)
+                const newUser = {
+                    uid: currentUser.user.uid,
+                    email: email,
+                    displayName: `${firstName} ${lastName}`,
+                    photoURL:  '',
+                    phoneNumber: '',
+                }
+                setDoc(userRef , newUser).then((e)=>{
+                    resolve(e)
+                })
+            })
         }).catch((error) => {
             reject(error)
         })
@@ -44,7 +58,9 @@ export const upImgProfile = (user, imgUrl) => {
     return new Promise((resolve, reject) => {
         updateProfile(user, {
             photoURL: imgUrl,
-        }).then(e => resolve(e)).catch(e => reject(e))
+        }).then(e => {
+            resolve(e)
+        }).catch(e => reject(e))
     })
 }
 export const upProfile = (user, firstName, lastName, email, newPassword) => {

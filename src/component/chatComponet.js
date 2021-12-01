@@ -10,12 +10,13 @@ const ChatComponet = () => {
     const [message, setMessage] = React.useState('')
     const [data, setData] = React.useState(null)
     const [arrayData, setArrayData] = React.useState(null)
-
+    const scrollRef = React.useRef();
     React.useEffect(() => {
+        scrollRef.current.scrollIntoView()
         return () => {
             unsbu();
         }
-    }, []);
+    }, [arrayData]);
     const handelChange = (event) => {
         setMessage(event.target.value)
     }
@@ -46,15 +47,22 @@ const ChatComponet = () => {
 
     const onClick = () => {
         const msgData = {
+            userId: user.uid,
             username: user.displayName,
             message: message,
             profile_picture: user.photoURL
         }
         push(chatRef, msgData).then(e => {
             console.log('succes');
+            setMessage('')
         })
     }
-
+    function handleListKey(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          onClick()
+        } 
+      }
     return (
         <div className="chat">
             <div className="chat-box">
@@ -64,19 +72,20 @@ const ChatComponet = () => {
                 <div className="chat-box-body">
                     <div className="chat-box-overlay">
                     </div>
-                    <div className="chat-logs">
+                    <div className="chat-logs" >
                         {(!arrayData) ? <div>loading....</div> : arrayData.map((value, index) =>
-                            <div className={(user.displayName === value.username) ? "chat-msg self" : "chat-msg user"} key={index}>
+                            <div  className={(user.uid === value.userId) ? "chat-msg self" : "chat-msg user"} key={index}>
                                 <span className="msg-avatar">
                                     <img src={value.profile_picture} />
                                 </span>
                                 <div className="cm-msg-text">{value.message}</div>
                             </div>)
                         }
+                        <div ref={scrollRef}></div>
                     </div>
                 </div>
                 <div className="chat-input-box">
-                    <input type="text" id="chat-input" placeholder="Send a message..." onChange={handelChange} />
+                    <input type="text" id="chat-input" onKeyDown={handleListKey} value={message} placeholder="Send a message..." onChange={handelChange} />
                     <button type="button" className="chat-submit" id="chat-submit" onClick={() => onClick()}><SendIcon /> </button>
                 </div>
             </div>
