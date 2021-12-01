@@ -5,11 +5,13 @@ import { Profile } from "./profile";
 import Zoom from 'react-reveal/Zoom';
 import './style.css'
 import ChatComponet from "./chatComponet";
+import Publication from "./publication";
 
 export default function Home({ user }) {
     let route = useRoutes([
         { path: '/Profile', element: <Zoom><Profile user={user} /></Zoom> },
         { path: '/Chat', element: <Zoom><ChatComponet /></Zoom> },
+        { path: '/Publication', element: <Zoom><Publication /></Zoom> },
     ])
     return (
         <div className='body'>

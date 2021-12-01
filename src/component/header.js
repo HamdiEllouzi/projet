@@ -49,7 +49,7 @@ export const NavBar = () => {
       <header className='navbar'>
         <div className='navbar__title navbar__item' onClick={()=>navigate('/')}>Home</div>
         <div className='navbar__item'><Link to='/Chat'>Member Tchat</Link></div>
-        <div className='navbar__item'>Contact</div>
+        <div className='navbar__item'><Link to='/Publication'>Publication</Link></div>
         <div className='navbar__item'>
         <div
           ref={anchorRef}
