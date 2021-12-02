@@ -1,9 +1,9 @@
 .commentBox {
     margin-top: 40px;
-    max-width: 700px;
     padding: 0px 0px 20px 0px;
     border-radius: 20px;
     background: #1b212d;
+    width: 98%;
 }
 .addPublication_contnair {
     position: absolute;
@@ -13,6 +13,7 @@
     border-radius: 25px;
     display: flex;
     flex-direction: column;
+    max-height: 450px;
 }
 .post_content,
 .post_page {
@@ -125,7 +126,7 @@ input:focus {
 input::placeholder {
     color: #bebebe;
 }
-textarea {
+.input_publication {
     font-family: "Darker Grotesque", sans-serif;
     margin-top: 10px;
     border-radius: 15px;
@@ -136,6 +137,24 @@ textarea {
     width: 95%;
     box-sizing: border-box;
     resize: none;
+}
+.input_comment{
+    font-family: "Darker Grotesque", sans-serif;
+    border: 1px solid #787878;
+    box-sizing: border-box;
+    transition: 0.2s;
+    border-radius: 15px;
+    padding: 5px 5px 5px 10px;
+    height: 31px;
+    resize: none;
+}
+.btn_comment {
+    width: 55px;
+    border-radius: 25px;
+    background-color: greenyellow;
+    border: none;
+    margin-left: auto;
+    margin-top: 10px;
 }
 textarea:focus {
     outline: none;

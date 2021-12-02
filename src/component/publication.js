@@ -5,47 +5,48 @@ import Post from './Post';
 import CloseIcon from '@mui/icons-material/Close';
 import uuid from 'react-uuid';
 import { auth } from '../firebase-config';
-const Publication = () => {
-    const data = [
-        {
-            id: 1,
-            content: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-            user: "Richard McClintock",
-            userPic: "",
-            publishDate: "2 Weeks ago",
-            likes: 18,
-            commentsNumber: 3,
-            comments: [
-                {
-                    id: 0,
-                    user: "Bonorum Malorum",
-                    content: "Many desktop publishing packages and web page editors now use",
-                    userPic: "",
-                    publishDate: "2 days ago"
-                },
-                {
-                    id: 1,
-                    user: "Cicero Areals",
-                    content: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.",
-                    userPic: "",
-                    publishDate: "4 days ago"
-                },
-                {
-                    id: 2,
-                    user: "Hanna Pages",
-                    content: "Lorem Ipsum comes from sectionsof de Finibus Bonorum et Malorum (The Extremes of Good and Evil)",
-                    userPic: "",
-                    publishDate: "1 Week ago"
-                },
-            ]
-        },
+import { deletePost, setPost } from '../service/service';
+import { getDocs, collection } from '@firebase/firestore';
+import { db } from '../firebase-config';
 
-    ];
-    const [fakeData, setFakeData] = React.useState(data);
+const Publication = () => {
+    /*  const data = [
+          {
+              id: 1,
+              content: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
+              user: "Richard McClintock",
+              userPic: "",
+              publishDate: "2 Weeks ago",
+              likesNumber: 18,
+              commentsNumber: 3,
+              comments: [
+                  {
+                      id: 0,
+                      user: "Bonorum Malorum",
+                      content: "Many desktop publishing packages and web page editors now use",
+                      userPic: "",
+                      publishDate: "2 days ago"
+                  },
+              ]
+              likes : [userid,userid,userid]
+          },
+  
+      ];*/
+    const [fireData, setFireData] = React.useState([]);
+    React.useEffect(() => {
+        fetchData()
+    }, [])
+    const fetchData = _ => {
+        const data = []
+        getDocs(collection(db, "posts")).then((e) => {
+            e.forEach((doc) => {
+                data.push(doc.data())
+            });
+        }).then(() => setFireData(data))
+    }
     const [like, setLike] = React.useState(false)
     const [addPublication, setAddPublication] = React.useState(false);
     const addLike = () => {
-        console.log('like');
         setLike(!like)
     }
     const addPost = (content) => {
@@ -55,12 +56,21 @@ const Publication = () => {
             content: content,
             user: auth.currentUser.displayName,
             userPic: auth.currentUser.photoURL,
-            likes: 0,
+            likesNumber: 0,
             commentsNumber: 0,
+            comments: [],
+            like:[]
         }
-        setFakeData([...fakeData , post])
+        setPost(post, id).then((e) => {
+            fetchData()
+        })
     }
+    const addComment = () =>{
 
+    }
+    const onDeletePost = (id) => {
+        deletePost(id).then(() => fetchData())
+    }
     const handleModal = _ => setAddPublication(!addPublication)
     return (
         <div className='post_page'>
@@ -68,18 +78,19 @@ const Publication = () => {
                 <button className='add_button' onClick={handleModal}><AddCircleOutlineIcon fontSize='large' /></button>
             </div>
             <div className='post_content'>
-                {fakeData.map((v, i) => <Post key={i} post={v} addLike={addLike} like={like} />)}
+                {fireData.map((v, i) => <Post key={i} addComment={addComment} deletePost={onDeletePost} post={v} addLike={addLike} like={like} />)}
             </div>
-            {addPublication && <AddPublication close={handleModal} addPost={addPost} />}
+            {addPublication && <AddPublication title='New Publication' buttonText='Post Publication' close={handleModal} onSubmit={addPost} />}
         </div>
     );
 }
 
-const AddPublication = ({ close, addPost }) => {
+export const AddPublication = ({ title,buttonText,close, onSubmit }) => {
+
     const [content, setContent] = React.useState('');
     const handleSubmit = (event) => {
         event.preventDefault();
-        addPost(content)
+        onSubmit(content)
         setContent('')
     }
     const handleTextChange = (event) => {
@@ -89,15 +100,15 @@ const AddPublication = ({ close, addPost }) => {
         <div className='addPublication_contnair'>
             <span className='close' onClick={close}> <CloseIcon /></span>
             <form className="createComment" onSubmit={handleSubmit}>
-                <h1 >Your Comment</h1>
+                <h1 >{title}</h1>
                 <textarea
-                    id="comment"
                     type="text"
-                    placeholder="Comment"
+                    className='input_publication'
+                    placeholder="Publication"
                     value={content}
                     onChange={handleTextChange}
                     required />
-                <button className='post_button ' type="submit">Post Comment</button>
+                <button className='post_button ' type="submit">{buttonText}</button>
             </form>
         </div>
     )

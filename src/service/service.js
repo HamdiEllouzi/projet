@@ -5,7 +5,7 @@ import {
 import { auth,db } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
-import { doc, setDoc,updateDoc } from "firebase/firestore"
+import { doc, setDoc,deleteDoc} from "firebase/firestore"
 
 
 export const Login = (email, password) => {
@@ -77,5 +77,23 @@ export const upProfile = (user, firstName, lastName, email, newPassword) => {
             storeUpdate()
             resolve(e)
         }).catch(e => reject(e))
+    })
+}
+
+export const setPost = ( post,id) => {
+    return new Promise((resolve, reject) => {
+        const userRef = doc(db, 'posts', id)
+        setDoc(userRef , post).then((e)=>{
+            resolve(e)
+        }).catch((e)=>reject(e))
+    })
+}
+
+export const deletePost = (id) => {
+    return new Promise((resolve, reject) => {
+        const userRef = doc(db, 'posts', id)
+        deleteDoc(userRef).then((e)=>{
+            resolve(e)
+        }).catch((e)=>reject(e))
     })
 }
