@@ -2,10 +2,10 @@ import {
     createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword,
     updateProfile, updateEmail, updatePassword
 } from 'firebase/auth'
-import { auth,db } from '../firebase-config';
+import { auth, db } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
-import { doc, setDoc,deleteDoc} from "firebase/firestore"
+import { doc, setDoc, getDoc, deleteDoc, getDocs, arrayUnion, updateDoc, increment,arrayRemove  } from "firebase/firestore"
 
 
 export const Login = (email, password) => {
@@ -25,16 +25,16 @@ export const register = (email, password, firstName, lastName) => {
         createUserWithEmailAndPassword(auth, email, password).then((currentUser) => {
             updateProfile(currentUser.user, {
                 displayName: `${firstName} ${lastName}`,
-            }).then((e)=>{
+            }).then((e) => {
                 const userRef = doc(db, 'users', currentUser.user.uid)
                 const newUser = {
                     uid: currentUser.user.uid,
                     email: email,
                     displayName: `${firstName} ${lastName}`,
-                    photoURL:  '',
+                    photoURL: '',
                     phoneNumber: '',
                 }
-                setDoc(userRef , newUser).then((e)=>{
+                setDoc(userRef, newUser).then((e) => {
                     resolve(e)
                 })
             })
@@ -80,20 +80,62 @@ export const upProfile = (user, firstName, lastName, email, newPassword) => {
     })
 }
 
-export const setPost = ( post,id) => {
+export const setPost = (post, id) => {
     return new Promise((resolve, reject) => {
         const userRef = doc(db, 'posts', id)
-        setDoc(userRef , post).then((e)=>{
+        setDoc(userRef, post).then((e) => {
             resolve(e)
-        }).catch((e)=>reject(e))
+        }).catch((e) => reject(e))
     })
 }
 
 export const deletePost = (id) => {
     return new Promise((resolve, reject) => {
         const userRef = doc(db, 'posts', id)
-        deleteDoc(userRef).then((e)=>{
+        deleteDoc(userRef).then((e) => {
             resolve(e)
-        }).catch((e)=>reject(e))
+        }).catch((e) => reject(e))
+    })
+}
+
+export const setComment = (id, comment) => {
+    return new Promise((resolve, reject) => {
+        const userRef = doc(db, 'posts', id)
+        updateDoc(userRef, {
+            comment: arrayUnion(comment)
+        }).then(() => {
+            updateDoc(userRef, {
+                commentsNumber: increment(1)
+            }).then((e) => resolve(e))
+        }).catch((e) => reject(e))
+
+    })
+}
+
+export const setLikeDislike = (postId) => {
+    return new Promise((resolve, reject) => {
+        const userRef = doc(db, 'posts', postId)
+        getDoc(userRef).then((data) => {
+            const like = data.data().like.find(v => v === auth.currentUser.uid)
+            !like ? 
+            updateDoc(userRef, {
+                like: arrayUnion(auth.currentUser.uid)
+            }).then(() => {
+                updateDoc(userRef, {
+                    likesNumber: increment(1)
+                }).then((e) => resolve(e))
+            }).catch((e) => reject(e)) 
+            :
+            updateDoc(userRef, {
+                like: arrayRemove(auth.currentUser.uid)
+            }).then(() => {
+                updateDoc(userRef, {
+                    likesNumber: increment(-1)
+                }).then((e) => resolve(e))
+            }).catch((e) => reject(e)) 
+              
+        })
+        /* */
+
     })
 }

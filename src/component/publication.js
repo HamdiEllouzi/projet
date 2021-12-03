@@ -5,33 +5,13 @@ import Post from './Post';
 import CloseIcon from '@mui/icons-material/Close';
 import uuid from 'react-uuid';
 import { auth } from '../firebase-config';
-import { deletePost, setPost } from '../service/service';
+import { deletePost, setComment, setLikeDislike, setPost } from '../service/service';
 import { getDocs, collection } from '@firebase/firestore';
 import { db } from '../firebase-config';
 
 const Publication = () => {
-    /*  const data = [
-          {
-              id: 1,
-              content: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-              user: "Richard McClintock",
-              userPic: "",
-              publishDate: "2 Weeks ago",
-              likesNumber: 18,
-              commentsNumber: 3,
-              comments: [
-                  {
-                      id: 0,
-                      user: "Bonorum Malorum",
-                      content: "Many desktop publishing packages and web page editors now use",
-                      userPic: "",
-                      publishDate: "2 days ago"
-                  },
-              ]
-              likes : [userid,userid,userid]
-          },
-  
-      ];*/
+    const [likeStatus, setLikeStatus] = React.useState(false)
+    const [addPublication, setAddPublication] = React.useState(false);
     const [fireData, setFireData] = React.useState([]);
     React.useEffect(() => {
         fetchData()
@@ -44,10 +24,12 @@ const Publication = () => {
             });
         }).then(() => setFireData(data))
     }
-    const [like, setLike] = React.useState(false)
-    const [addPublication, setAddPublication] = React.useState(false);
-    const addLike = () => {
-        setLike(!like)
+
+    const addLike = (postId) => {
+        setLikeDislike(postId).then(() => {
+            fetchData()
+        })
+        setLikeStatus(!likeStatus)
     }
     const addPost = (content) => {
         let id = uuid()
@@ -58,15 +40,22 @@ const Publication = () => {
             userPic: auth.currentUser.photoURL,
             likesNumber: 0,
             commentsNumber: 0,
-            comments: [],
-            like:[]
+            comment: [],
+            like: []
         }
         setPost(post, id).then((e) => {
             fetchData()
         })
     }
-    const addComment = () =>{
-
+    const addComment = (id, comment) => {
+        const data = {
+            id: auth.currentUser.uid,
+            user: auth.currentUser.displayName,
+            content: comment,
+            userPic: auth.currentUser.photoURL,
+            publishDate: "2 days ago"
+        }
+        setComment(id, data).then((e) => fetchData())
     }
     const onDeletePost = (id) => {
         deletePost(id).then(() => fetchData())
@@ -78,14 +67,14 @@ const Publication = () => {
                 <button className='add_button' onClick={handleModal}><AddCircleOutlineIcon fontSize='large' /></button>
             </div>
             <div className='post_content'>
-                {fireData.map((v, i) => <Post key={i} addComment={addComment} deletePost={onDeletePost} post={v} addLike={addLike} like={like} />)}
+                {fireData.map((v, i) => <Post key={i} addComment={addComment} deletePost={onDeletePost} post={v} addLike={addLike} like={likeStatus} />)}
             </div>
             {addPublication && <AddPublication title='New Publication' buttonText='Post Publication' close={handleModal} onSubmit={addPost} />}
         </div>
     );
 }
 
-export const AddPublication = ({ title,buttonText,close, onSubmit }) => {
+export const AddPublication = ({ title, buttonText, close, onSubmit }) => {
 
     const [content, setContent] = React.useState('');
     const handleSubmit = (event) => {
