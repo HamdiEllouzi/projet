@@ -3,9 +3,14 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { auth } from '../firebase-config';
 
-
-const Post = ({ deletePost, addComment, post, addLike, like }) => {
+const Post = ({ deletePost, addComment, post, addLike }) => {
+    const ifLike = post.like.find((v)=> v === auth.currentUser.uid )
+    React.useEffect(()=>{
+        (ifLike)? setLikeStatus(true) : setLikeStatus(false)
+    },[post])
+    const [likeStatus, setLikeStatus] = React.useState(false)
     const [showComments, setShowComments] = React.useState(false)
     const [comment, setComment] = React.useState('')
     const handleShowComments = _ => setShowComments(!showComments)
@@ -29,7 +34,7 @@ const Post = ({ deletePost, addComment, post, addLike, like }) => {
                         <span className="postText">{post.content}</span>
                         <div className="postDesc">
                             <span className="desc">
-                                {like
+                                {likeStatus
                                     ? <button className='like_button' onClick={()=>addLike(post.id)}><ThumbUpIcon /></button>
                                     : <button className='like_button' onClick={()=>addLike(post.id)}><FavoriteBorderIcon /></button>}
                                 <span>{post.likesNumber} </span>

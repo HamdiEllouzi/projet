@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import uuid from 'react-uuid';
 import { auth } from '../firebase-config';
 import { deletePost, setComment, setLikeDislike, setPost } from '../service/service';
-import { getDocs, collection } from '@firebase/firestore';
+import { getDocs, collection,query, orderBy,} from '@firebase/firestore';
 import { db } from '../firebase-config';
 
 const Publication = () => {
@@ -18,9 +18,10 @@ const Publication = () => {
     }, [])
     const fetchData = _ => {
         const data = []
-        getDocs(collection(db, "posts")).then((e) => {
+        getDocs(collection(db, "posts"),orderBy("user", "desc")).then((e) => {
             e.forEach((doc) => {
                 data.push(doc.data())
+                console.log(doc.data())
             });
         }).then(() => setFireData(data))
     }
