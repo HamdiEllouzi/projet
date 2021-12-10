@@ -6,22 +6,24 @@ import CloseIcon from '@mui/icons-material/Close';
 import uuid from 'react-uuid';
 import { auth } from '../firebase-config';
 import { deletePost, setComment, setLikeDislike, setPost } from '../service/service';
-import { getDocs, collection,query, orderBy,} from '@firebase/firestore';
+import { getDocs, collection, orderBy,query} from '@firebase/firestore';
 import { db } from '../firebase-config';
+import moment from 'moment'
 
 const Publication = () => {
     const [likeStatus, setLikeStatus] = React.useState(false)
     const [addPublication, setAddPublication] = React.useState(false);
     const [fireData, setFireData] = React.useState([]);
+    const currentDateTime = moment().toISOString()
     React.useEffect(() => {
         fetchData()
+        
     }, [])
     const fetchData = _ => {
         const data = []
-        getDocs(collection(db, "posts"),orderBy("user", "desc")).then((e) => {
+        getDocs(query(collection(db, "posts"),orderBy("publishDate", "asc"))).then((e) => {
             e.forEach((doc) => {
                 data.push(doc.data())
-                console.log(doc.data())
             });
         }).then(() => setFireData(data))
     }
@@ -39,13 +41,16 @@ const Publication = () => {
             content: content,
             user: auth.currentUser.displayName,
             userPic: auth.currentUser.photoURL,
+            userID: auth.currentUser.uid,
             likesNumber: 0,
             commentsNumber: 0,
             comment: [],
-            like: []
+            like: [],
+            publishDate: currentDateTime
         }
         setPost(post, id).then((e) => {
             fetchData()
+            handleModal()
         })
     }
     const addComment = (id, comment) => {
@@ -54,9 +59,11 @@ const Publication = () => {
             user: auth.currentUser.displayName,
             content: comment,
             userPic: auth.currentUser.photoURL,
-            publishDate: "2 days ago"
+            commentDate: currentDateTime
         }
-        setComment(id, data).then((e) => fetchData())
+        setComment(id, data).then((e) => {
+            fetchData()
+        })
     }
     const onDeletePost = (id) => {
         deletePost(id).then(() => fetchData())

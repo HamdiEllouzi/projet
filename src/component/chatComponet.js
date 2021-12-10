@@ -13,9 +13,7 @@ const ChatComponet = () => {
     const scrollRef = React.useRef();
     React.useEffect(() => {
         scrollRef.current.scrollIntoView()
-        return () => {
-            unsbu();
-        }
+        return null
     }, [arrayData]);
     const handelChange = (event) => {
         setMessage(event.target.value)
@@ -32,7 +30,7 @@ const ChatComponet = () => {
             console.error(error);
         });
     }
-    const unsbu = onValue(ref(rtdb, 'homeChat/'), (snapshot) => {
+     onValue(ref(rtdb, 'homeChat/'), (snapshot) => {
         const getdata = snapshot.val();
         if (data !== null) {
             if (Object.keys(getdata).length !== Object.keys(data).length) {
@@ -43,6 +41,7 @@ const ChatComponet = () => {
             setData(getdata)
             getData()
         }
+        return null
     });
 
     const onClick = () => {
@@ -76,7 +75,7 @@ const ChatComponet = () => {
                         {(!arrayData) ? <div>loading....</div> : arrayData.map((value, index) =>
                             <div  className={(user.uid === value.userId) ? "chat-msg self" : "chat-msg user"} key={index}>
                                 <span className="msg-avatar">
-                                    <img src={value.profile_picture} />
+                                    <img src={value.profile_picture} alt='profile img'/>
                                 </span>
                                 <div className="cm-msg-text">{value.message}</div>
                             </div>)

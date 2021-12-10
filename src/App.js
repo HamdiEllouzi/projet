@@ -6,10 +6,9 @@ import {auth } from './firebase-config';
 import Home from './component/home';
 import {onAuthStateChanged} from 'firebase/auth'
 import { useRoutes } from "react-router-dom";
-import { Profile } from './component/profile';
 import { RequireAuth, NotAuth } from './service/private-route';
 import { storeUpdate } from './service/service';
-import ChatComponet from "./component/chatComponet";
+
 function App() {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);

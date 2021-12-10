@@ -40,7 +40,7 @@ export const Profile = ({ user }) => {
     const uploadImg = (e) => {
         const imgId = uuid()
         const storageRef = ref(storage, 'profile/' + imgId)
-        const upload = uploadBytes(storageRef, e.target.files[0]).then(() => {
+        uploadBytes(storageRef, e.target.files[0]).then(() => {
             getDownloadURL(storageRef).then(e => {
                 upImgProfile(user, e).then(() => { storeUpdate() })
             })
@@ -61,16 +61,16 @@ export const Profile = ({ user }) => {
         const data = new FormData(event.currentTarget);
         const firstName = data.get('firstName') || profile.displayName.split(' ')[0]
         const lastName = data.get('lastName') || profile.displayName.split(' ')[1]
-        const email = data.get('email') || ''
-        console.log(email);
-        (validate.password === validate.cpassword)&&upProfile(user,firstName,lastName,email,validate.password).then((e)=>{
+        const email = (data.get('email') || '')
+        
+        (validate.password === validate.cpassword)&&(upProfile(user,firstName,lastName,email,validate.password).then((e)=>{
             form.current.reset()
             setValidate({
                 password: '',
                 cpassword: ''
             })
             setPassValidate(false)
-        }).catch((error)=>{console.log(error);})
+        }).catch((error)=>{console.log(error);}))
     };
     return (
         <div className="profile-main">
@@ -173,7 +173,6 @@ export const Profile = ({ user }) => {
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
                                         name='cpassword'
-                                        error={passValidate}
                                         placeholder="Confirme New Password"
                                         onChange={handleChange('cpassword')}
                                         size="small"

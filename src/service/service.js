@@ -5,7 +5,7 @@ import {
 import { auth, db } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
-import { doc, setDoc, getDoc, deleteDoc, getDocs, arrayUnion, updateDoc, increment,arrayRemove  } from "firebase/firestore"
+import { doc, setDoc, getDoc, deleteDoc, arrayUnion, updateDoc, increment,arrayRemove  } from "firebase/firestore"
 
 
 export const Login = (email, password) => {
@@ -55,27 +55,42 @@ export const storeUpdate = () => {
     }))
 }
 export const upImgProfile = (user, imgUrl) => {
+    const currentUser = auth.currentUser
+    const userRef = doc(db, 'users', currentUser.uid)
     return new Promise((resolve, reject) => {
         updateProfile(user, {
             photoURL: imgUrl,
         }).then(e => {
-            resolve(e)
+            updateDoc(userRef, {
+                photoURL: imgUrl
+            }).then((e) =>resolve(e))
         }).catch(e => reject(e))
     })
 }
 export const upProfile = (user, firstName, lastName, email, newPassword) => {
+    const currentUser = auth.currentUser
+    const userRef = doc(db, 'users', currentUser.uid)
     return new Promise((resolve, reject) => {
         updateProfile(user, {
             displayName: `${firstName} ${lastName}`,
-        }).then((a) => { storeUpdate() }).catch(e => reject(e))
+        }).then((a) => { 
+            updateDoc(userRef, {
+                displayName: `${firstName} ${lastName}`,
+            }).then((e) =>{
+                storeUpdate() 
+                resolve(e)
+            }) 
+        }).catch(e => reject(e))
         newPassword && updatePassword(user, newPassword).then((e) => {
-            console.log('password updated');
             resolve(e)
         }).catch((error) => { reject(error) });
         (user.email !== email) && updateEmail(user, email).then((e) => {
-            console.log('email updated');
-            storeUpdate()
-            resolve(e)
+            updateDoc(userRef, {
+                email: email,
+            }).then((e) =>{
+                storeUpdate() 
+                resolve(e)
+            }) 
         }).catch(e => reject(e))
     })
 }
@@ -135,7 +150,6 @@ export const setLikeDislike = (postId) => {
             }).catch((e) => reject(e)) 
               
         })
-        /* */
 
     })
 }
