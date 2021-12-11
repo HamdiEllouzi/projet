@@ -30,7 +30,7 @@ const Post = ({ deletePost, addComment, post, addLike }) => {
                     <div className="postContent">
                         <div className="postHeader">
                             <h2 className="postAuthor" id={post.id}><Link to={`/${post.userID}`}> {post.user}</Link></h2>
-                            <span className="publishDate">{moment(new Date(post.publishDate)).fromNow()}</span>
+                            <span className="publishDate">{moment(post.publishDate).fromNow()}</span>
                             {(post.userID === auth.currentUser.uid)&&
                             <span style={{ marginLeft: 'auto' }}>
                                 <button onClick={() => deletePost(post.id)} style={{ color: 'red' }} className='like_button'>

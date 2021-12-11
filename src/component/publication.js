@@ -6,28 +6,25 @@ import CloseIcon from '@mui/icons-material/Close';
 import uuid from 'react-uuid';
 import { auth } from '../firebase-config';
 import { deletePost, setComment, setLikeDislike, setPost } from '../service/service';
-import { getDocs, collection, orderBy,query} from '@firebase/firestore';
+import { getDocs, collection, orderBy, query } from '@firebase/firestore';
 import { db } from '../firebase-config';
-import moment from 'moment'
 
 const Publication = () => {
     const [likeStatus, setLikeStatus] = React.useState(false)
     const [addPublication, setAddPublication] = React.useState(false);
     const [fireData, setFireData] = React.useState([]);
-    const currentDateTime = moment().toISOString()
+    const currentDateTime = Date.now()
     React.useEffect(() => {
         fetchData()
-        
     }, [])
     const fetchData = _ => {
         const data = []
-        getDocs(query(collection(db, "posts"),orderBy("publishDate", "asc"))).then((e) => {
+        getDocs(query(collection(db, "posts"), orderBy("publishDate", "desc"))).then((e) => {
             e.forEach((doc) => {
                 data.push(doc.data())
             });
         }).then(() => setFireData(data))
     }
-
     const addLike = (postId) => {
         setLikeDislike(postId).then(() => {
             fetchData()
@@ -53,6 +50,7 @@ const Publication = () => {
             handleModal()
         })
     }
+
     const addComment = (id, comment) => {
         const data = {
             id: auth.currentUser.uid,
@@ -93,12 +91,20 @@ export const AddPublication = ({ title, buttonText, close, onSubmit }) => {
     const handleTextChange = (event) => {
         setContent(event.target.value)
     }
+    function handleListKey(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            onSubmit(content)
+            setContent('')
+        }
+    }
     return (
         <div className='addPublication_contnair'>
             <span className='close' onClick={close}> <CloseIcon /></span>
             <form className="createComment" onSubmit={handleSubmit}>
                 <h1 >{title}</h1>
                 <textarea
+                    onKeyDown={handleListKey}
                     type="text"
                     className='input_publication'
                     placeholder="Publication"

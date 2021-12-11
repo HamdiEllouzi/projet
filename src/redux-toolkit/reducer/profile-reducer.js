@@ -9,7 +9,6 @@ const initialState = {
     emailVerified:false ,
     phoneNumber:'',
   }
-  
 }
 
 export const profileSlice = createSlice({
@@ -19,12 +18,8 @@ export const profileSlice = createSlice({
     addProfile : (state,payload) =>{
         state.profile = payload.payload
     },
-    editProfile :  (state,payload) =>{
-        
-    }
   },
 })
-
 
 export const { addProfile,editProfile } = profileSlice.actions
 
