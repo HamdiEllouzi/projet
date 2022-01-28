@@ -12,27 +12,39 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { register } from '../service/service';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const theme = createTheme();
 
 export default function SignUp() {
-
+  const dbUrl = process.env.REACT_APP_DATA_BASE_URL;
   const [error, setError] = useState('');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    register(data.get('email'),data.get('password'),data.get('firstName'),data.get('lastName'))
+    axios
+      .post(`${dbUrl}/api/auth/signup`, {
+        email: data.get('email'),
+        password: data.get('password'),
+        userFirstName: data.get('firstName'),
+        userLastName: data.get('lastName'),
+      })
+      .then((d) => {
+        redirect();
+        console.log(d.data.message);
+      })
+      .catch((error) => setError(error.response.data.err.message));
+    /* register(data.get('email'),data.get('password'),data.get('firstName'),data.get('lastName'))
     .then(navigate("/"))
-    .catch((error)=> setError(error))
+    .catch((error)=> setError(error))*/
   };
-  const redirect =()=>{
-    navigate('/Sign-in')
-  }
+  const redirect = () => {
+    navigate('/Sign-in');
+  };
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
           sx={{
@@ -40,24 +52,23 @@ export default function SignUp() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box component="form" Validate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component='form' Validate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  autoComplete="given-name"
-                  name="firstName"
+                  autoComplete='given-name'
+                  name='firstName'
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id='firstName'
+                  label='First Name'
                   autoFocus
                 />
               </Grid>
@@ -65,31 +76,31 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
+                  id='lastName'
+                  label='Last Name'
+                  name='lastName'
+                  autoComplete='family-name'
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id='email'
+                  label='Email Address'
+                  name='email'
+                  autoComplete='email'
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
+                  name='password'
+                  label='Password'
+                  type='password'
+                  id='password'
+                  autoComplete='new-password'
                 />
               </Grid>
               <Grid item xs={12}>
@@ -97,16 +108,15 @@ export default function SignUp() {
               </Grid>
             </Grid>
             <Button
-              type="submit"
+              type='submit'
               fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
+              variant='contained'
+              sx={{ mt: 3, mb: 2 }}>
               Sign Up
             </Button>
-            <Grid container justifyContent="flex-end">
+            <Grid container justifyContent='flex-end'>
               <Grid item>
-                <Link href="#" variant="body2" onClick={() => redirect()}>
+                <Link href='#' variant='body2' onClick={() => redirect()}>
                   Already have an account? Sign in
                 </Link>
               </Grid>
