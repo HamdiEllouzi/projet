@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
-export function RequireAuth({ user, children }) {
+export function RequireAuth({ children }) {
   const TokenData = localStorage.getItem('Token');
   let location = useLocation();
   if (!TokenData) {
@@ -7,8 +7,9 @@ export function RequireAuth({ user, children }) {
   }
   return children;
 }
-export function NotAuth({ user, children }) {
-  if (user) {
+export function NotAuth({ children }) {
+  const TokenData = localStorage.getItem('Token');
+  if (TokenData) {
     return <Navigate to='/' />;
   }
   return children;

@@ -5,10 +5,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import uuid from 'react-uuid';
-import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
-import { storage } from '../firebase-config';
-import { storeUpdate, upImgProfile, upProfile } from '../service/service';
+import { upImgProfile, upProfile } from '../service/service';
 import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -39,8 +36,7 @@ export const Profile = ({ user }) => {
       : setPassValidate(true);
   }, [validate]);
   const uploadImg = (e) => {
-    const img =
-      'https://learnenglish.britishcouncil.org/sites/podcasts/files/styles/max_325x325/public/2021-10/RS8003_GettyImages-994576028-hig.jpg?itok=m0rIP3zI';
+    const img = e.target.files[0];
     upImgProfile(img);
     /*const imgId = uuid()
         const storageRef = ref(storage, 'profile/' + imgId)
@@ -63,23 +59,21 @@ export const Profile = ({ user }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const firstName =
-      data.get('firstName') || profile.displayName.split(' ')[0];
-    const lastName = data.get('lastName') || profile.displayName.split(' ')[1];
-    const email =
-      (data.get('email') || '')(validate.password === validate.cpassword) &&
-      upProfile(user, firstName, lastName, email, validate.password)
-        .then((e) => {
-          form.current.reset();
-          setValidate({
-            password: '',
-            cpassword: '',
-          });
-          setPassValidate(false);
-        })
-        .catch((error) => {
-          console.log(error);
+    const firstName = data.get('firstName');
+    const lastName = data.get('lastName');
+    const email = data.get('email');
+    upProfile(firstName, lastName, email)
+      .then((e) => {
+        form.current.reset();
+        setValidate({
+          password: '',
+          cpassword: '',
         });
+        setPassValidate(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
   return (
     <div className='profile-main'>

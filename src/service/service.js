@@ -1,45 +1,33 @@
-import {
-  createUserWithEmailAndPassword,
-  signOut,
-  signInWithEmailAndPassword,
-  updateProfile,
-  updateEmail,
-  updatePassword,
-} from 'firebase/auth';
-import { auth, db } from '../firebase-config';
 import { addProfile } from '../redux-toolkit/reducer/profile-reducer';
 import { profileStore } from '../redux-toolkit/store/profile-store';
-import {
-  doc,
-  setDoc,
-  getDoc,
-  deleteDoc,
-  arrayUnion,
-  updateDoc,
-  increment,
-  arrayRemove,
-} from 'firebase/firestore';
 import axios from 'axios';
 
 const dbUrl = process.env.REACT_APP_DATA_BASE_URL;
-const TokenData = JSON.parse(localStorage.getItem('Token'));
-const currentUser = JSON.parse(localStorage.getItem('User'));
-const axiosReq = axios.create({
-  baseURL: dbUrl,
-  headers: {
-    authorization: `Bearer ${TokenData}`,
-  },
-});
 
+export const axiosReq = axios.create({
+  baseURL: dbUrl,
+});
+axiosReq.interceptors.request.use((config) => {
+  const TokenData = JSON.parse(localStorage.getItem('Token'));
+  config.headers = {
+    authorization: `Bearer ${TokenData}`,
+  };
+  return config;
+});
 export const Login = (email, password) => {
   return new Promise((resolve, reject) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((currentUser) => {
-        resolve(currentUser);
+    axios
+      .post(`${dbUrl}/api/auth/login`, {
+        email: email,
+        password: password,
       })
-      .catch((error) => {
-        reject(error);
-      });
+      .then((res) => {
+        localStorage.setItem('Token', JSON.stringify(res.data.token));
+        localStorage.setItem('User', JSON.stringify(res.data.utilisaeur));
+        storeUpdate();
+        resolve(res);
+      })
+      .catch((error) => reject(error.response));
   });
 };
 export const logout = () => {
@@ -50,23 +38,15 @@ export const logout = () => {
 };
 export const register = (email, password, firstName, lastName) => {
   return new Promise((resolve, reject) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((currentUser) => {
-        updateProfile(currentUser.user, {
-          displayName: `${firstName} ${lastName}`,
-        }).then((e) => {
-          const userRef = doc(db, 'users', currentUser.user.uid);
-          const newUser = {
-            uid: currentUser.user.uid,
-            email: email,
-            displayName: `${firstName} ${lastName}`,
-            photoURL: '',
-            phoneNumber: '',
-          };
-          setDoc(userRef, newUser).then((e) => {
-            resolve(e);
-          });
-        });
+    axios
+      .post(`${dbUrl}/api/auth/signup`, {
+        email: email,
+        password: password,
+        userFirstName: firstName,
+        userLastName: lastName,
+      })
+      .then((d) => {
+        resolve(d);
       })
       .catch((error) => {
         reject(error);
@@ -74,8 +54,7 @@ export const register = (email, password, firstName, lastName) => {
   });
 };
 export const storeUpdate = () => {
-  // const currentUser = auth.currentUser
-
+  const currentUser = JSON.parse(localStorage.getItem('User'));
   profileStore.dispatch(
     addProfile({
       uid: currentUser._id,
@@ -85,127 +64,107 @@ export const storeUpdate = () => {
     }),
   );
 };
-export const upImgProfile = (imgUrl) => {
-  /*const currentUser = auth.currentUser;
-  const userRef = doc(db, 'users', currentUser.uid);*/
+export const upImgProfile = (img) => {
   return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('image', img);
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    };
     axiosReq
-      .put('/api/update', {
-        userId: currentUser._id,
-        userImage: imgUrl,
+      .put('/api/update/photo', formData, config)
+      .then((data) => {
+        localStorage.removeItem('User');
+        localStorage.setItem('User', JSON.stringify(data.data.user));
+        storeUpdate();
+        resolve(data);
       })
-      .then()
-      .catch((error) => console.log(error));
-    /*  updateProfile(user, {
-      photoURL: imgUrl,
-    })
-      .then((e) => {
-        updateDoc(userRef, {
-          photoURL: imgUrl,
-        }).then((e) => resolve(e));
-      })
-      .catch((e) => reject(e));*/
+      .catch((error) => reject(error));
   });
 };
-export const upProfile = (user, firstName, lastName, email, newPassword) => {
-  /* const currentUser = auth.currentUser;
-  const userRef = doc(db, 'users', currentUser.uid);*/
+export const upProfile = (firstName, lastName, email) => {
   return new Promise((resolve, reject) => {
-    /*updateProfile(user, {
-      displayName: `${firstName} ${lastName}`,
-    })
-      .then((a) => {
-        updateDoc(userRef, {
-          displayName: `${firstName} ${lastName}`,
-        }).then((e) => {
-          storeUpdate();
-          resolve(e);
-        });
+    const currentUser = JSON.parse(localStorage.getItem('User'));
+    axiosReq
+      .put('/api/update/user', {
+        userFirstName: firstName || currentUser.userFirstName,
+        userLastName: lastName || currentUser.userLastName,
+        email: email || currentUser.email,
       })
-      .catch((e) => reject(e));
-    newPassword &&
-      updatePassword(user, newPassword)
-        .then((e) => {
-          resolve(e);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    user.email !== email &&
-      updateEmail(user, email)
-        .then((e) => {
-          updateDoc(userRef, {
-            email: email,
-          }).then((e) => {
-            storeUpdate();
-            resolve(e);
-          });
-        })
-        .catch((e) => reject(e));*/
+      .then((data) => {
+        localStorage.removeItem('User');
+        localStorage.setItem('User', JSON.stringify(data.data.user));
+        storeUpdate();
+        resolve(data.data);
+      })
+      .catch((error) => reject(error.response.data.err));
   });
 };
 
-export const setPost = (post, id) => {
+export const setPost = (post) => {
   return new Promise((resolve, reject) => {
-    const userRef = doc(db, 'posts', id);
-    setDoc(userRef, post)
-      .then((e) => {
-        resolve(e);
+    axiosReq
+      .post('/api/posts', post)
+      .then((data) => {
+        resolve(data);
       })
-      .catch((e) => reject(e));
+      .catch((error) => reject(error.response));
   });
 };
 
 export const deletePost = (id) => {
   return new Promise((resolve, reject) => {
-    const userRef = doc(db, 'posts', id);
-    deleteDoc(userRef)
-      .then((e) => {
-        resolve(e);
+    axiosReq
+      .delete('/api/posts', {
+        params: {
+          postId: id,
+        },
       })
-      .catch((e) => reject(e));
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => reject(error.response));
   });
 };
 
 export const setComment = (id, comment) => {
   return new Promise((resolve, reject) => {
-    const userRef = doc(db, 'posts', id);
-    updateDoc(userRef, {
-      comment: arrayUnion(comment),
-    })
-      .then(() => {
-        updateDoc(userRef, {
-          commentsNumber: increment(1),
-        }).then((e) => resolve(e));
+    axiosReq
+      .post('/api/comments', {
+        postId: id,
+        comment: comment,
       })
-      .catch((e) => reject(e));
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => reject(error.response));
+  });
+};
+
+export const getComment = (id) => {
+  return new Promise((resolve, reject) => {
+    axiosReq
+      .get('/api/comments', {
+        params: { postId: id },
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => reject(error.response));
   });
 };
 
 export const setLikeDislike = (postId) => {
   return new Promise((resolve, reject) => {
-    const userRef = doc(db, 'posts', postId);
-    getDoc(userRef).then((data) => {
-      const like = data.data().like.find((v) => v === auth.currentUser.uid);
-      !like
-        ? updateDoc(userRef, {
-            like: arrayUnion(auth.currentUser.uid),
-          })
-            .then(() => {
-              updateDoc(userRef, {
-                likesNumber: increment(1),
-              }).then((e) => resolve(e));
-            })
-            .catch((e) => reject(e))
-        : updateDoc(userRef, {
-            like: arrayRemove(auth.currentUser.uid),
-          })
-            .then(() => {
-              updateDoc(userRef, {
-                likesNumber: increment(-1),
-              }).then((e) => resolve(e));
-            })
-            .catch((e) => reject(e));
-    });
+    axiosReq
+      .put('/api/posts/like', {
+        postId: postId,
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => reject(error.response));
   });
 };

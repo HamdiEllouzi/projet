@@ -11,35 +11,25 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Login, storeUpdate } from '../service/service';
-import axios from 'axios';
+import { Login } from '../service/service';
 import { useNavigate, useLocation } from 'react-router-dom';
 const theme = createTheme();
 
 export default function SignInSide() {
-  const dbUrl = process.env.REACT_APP_DATA_BASE_URL;
   const navigate = useNavigate();
   let location = useLocation();
   let from = location.state?.from?.pathname || '/';
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    axios
-      .post(`${dbUrl}/api/auth/login`, {
-        email: data.get('email'),
-        password: data.get('password'),
-      })
-      .then((res) => {
-        console.log(res.data);
-        localStorage.setItem('Token', JSON.stringify(res.data.token));
-        localStorage.setItem('User', JSON.stringify(res.data.utilisaeur));
+
+    Login(data.get('email'), data.get('password'))
+      .then(() => {
         navigate(from, { replace: true });
-        storeUpdate();
       })
-      .catch((error) => console.log('error', error));
-    /* Login(data.get('email'), data.get('password')).then(() => {
-      navigate(from, { replace: true })
-    }).catch((e) => { console.log(e); })*/
+      .catch((e) => {
+        console.log(e);
+      });
   };
   const redirect = () => {
     navigate('/Sing-up');

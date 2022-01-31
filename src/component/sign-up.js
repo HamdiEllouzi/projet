@@ -12,32 +12,24 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { register } from '../service/service';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const theme = createTheme();
 
 export default function SignUp() {
-  const dbUrl = process.env.REACT_APP_DATA_BASE_URL;
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    axios
-      .post(`${dbUrl}/api/auth/signup`, {
-        email: data.get('email'),
-        password: data.get('password'),
-        userFirstName: data.get('firstName'),
-        userLastName: data.get('lastName'),
-      })
-      .then((d) => {
-        redirect();
-        console.log(d.data.message);
-      })
+
+    register(
+      data.get('email'),
+      data.get('password'),
+      data.get('firstName'),
+      data.get('lastName'),
+    )
+      .then(() => redirect())
       .catch((error) => setError(error.response.data.err.message));
-    /* register(data.get('email'),data.get('password'),data.get('firstName'),data.get('lastName'))
-    .then(navigate("/"))
-    .catch((error)=> setError(error))*/
   };
   const redirect = () => {
     navigate('/Sign-in');
