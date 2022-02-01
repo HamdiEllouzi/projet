@@ -20,11 +20,7 @@ export default function Home({ user }) {
     },
     {
       path: "/Chat",
-      element: (
-        <Zoom>
-          <ChatComponet />
-        </Zoom>
-      ),
+      element: <ChatComponet />,
     },
     {
       path: "/Publication",
@@ -44,7 +40,7 @@ export default function Home({ user }) {
     },
   ]);
   return (
-    <div className="body">
+    <div className='body'>
       <NavBar user={user} />
       {route}
       <Footer />
