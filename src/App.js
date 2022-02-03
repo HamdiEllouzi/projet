@@ -1,16 +1,17 @@
-import './App.css';
-import SignInSide from './component/login-componet';
-import SignUp from './component/sign-up';
-import { useEffect, useState } from 'react';
-import Home from './component/home';
-import { useRoutes } from 'react-router-dom';
-import { RequireAuth, NotAuth } from './service/private-route';
-import { storeUpdate } from './service/service';
+import "./App.css";
+import SignInSide from "./component/login-componet";
+import SignUp from "./component/sign-up";
+import { useEffect, useState } from "react";
+import Home from "./component/home";
+import { useRoutes } from "react-router-dom";
+import { RequireAuth, NotAuth } from "./service/private-route";
+import { storeUpdate } from "./service/service";
 
 function App() {
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const currentUser = JSON.parse(localStorage.getItem('User'));
+    const currentUser = JSON.parse(localStorage.getItem("User"));
     if (currentUser) {
       storeUpdate();
     }
@@ -19,7 +20,7 @@ function App() {
 
   let element = useRoutes([
     {
-      path: '/*',
+      path: "/*",
       element: (
         <RequireAuth>
           <Home />
@@ -27,7 +28,7 @@ function App() {
       ),
     },
     {
-      path: '/Sign-in',
+      path: "/Sign-in",
       element: (
         <NotAuth>
           <SignInSide />
@@ -35,10 +36,10 @@ function App() {
       ),
     },
     {
-      path: '/Sing-up',
+      path: "/Sing-up",
       element: (
         <NotAuth>
-          <SignUp />{' '}
+          <SignUp />{" "}
         </NotAuth>
       ),
     },

@@ -8,7 +8,6 @@ export default function Conversation({ conversation, curentUser }) {
     getUserById(frendId)
       .then((data) => {
         setUser(data);
-        console.log(data);
       })
       .catch((error) => {
         console.log(error);

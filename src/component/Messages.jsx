@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import moment from "moment";
 
-export default function Messages({ user }) {
+export default function Messages({ me, message }) {
   return (
-    <div className={user ? "chat-msg self" : "chat-msg user"}>
-      <span className='msg-avatar'>
-        <img
-          src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWMe4YWSC5sE5_ChXM25T1QgtZqjviuOWKTa5inNg-Shf1GceSNzdNtq7QBGI1NUAnuJw&usqp=CAU'
-          alt='profile img'
-        />
-      </span>
-      <div className='cm-msg-text'>
-        hadh auhduahd ahduh uahduah dahu hduah dahudhauh dajdhuahduah dahu hdauh udhaudhaudh ahudhau d hau
+    <div className='chat-block'>
+      <div className={me ? "chat-msg self" : "chat-msg user"}>
+        <span className='msg-avatar'>
+          <img src={message.userImage} alt='profile img' />
+        </span>
+        <div className='cm-msg-text'>{message.msg}</div>
+      </div>
+      <div className='publishDate' style={me ? { marginLeft: "auto" } : { marginRight: "auto" }}>
+        {moment(new Date(message.createdAt)).fromNow()}
       </div>
     </div>
   );

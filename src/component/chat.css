@@ -1,9 +1,11 @@
 .messanger {
   display: flex;
   background: white;
-  width: 100%;
-  height: calc(100vh - 140px);
+  width: 90%;
+  height: calc(97vh - 140px);
   flex-direction: column;
+  margin: auto;
+  border-radius: 14px;
 }
 .chat-box-header {
   background: #5a5eb9;
@@ -36,6 +38,7 @@
 .chatOnline {
   padding: 10px;
   height: 100%;
+  box-sizing: border-box;
 }
 .chatMenuWrapper input {
   border-radius: 0;
@@ -53,11 +56,56 @@
   align-items: center;
   padding: 10px;
   cursor: pointer;
-  margin-top: 20px;
   border-radius: 10px;
+}
+.btnDeleteConversation {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+.btnDeleteConversation::after {
+  content: "";
+  background-color: red;
+  width: 3px;
+  display: block;
+  position: absolute;
+  height: 15px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-50deg);
+}
+
+.btnDeleteConversation::before {
+  content: "";
+  background-color: red;
+  width: 3px;
+  display: block;
+  position: absolute;
+  height: 15px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(50deg);
+}
+
+.conversation-list {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
 }
 .conversation:hover {
   background-color: rgb(207, 207, 207);
+}
+.btnDeleteConversation:hover::before {
+  transform: translate(-50%, -50%) rotate(40deg);
+  height: 20px;
+}
+.btnDeleteConversation:hover::after {
+  transform: translate(-50%, -50%) rotate(-40deg);
+  height: 20px;
 }
 .conversationImg {
   width: 40px;
@@ -89,14 +137,23 @@
   float: left;
   margin-left: 10px;
   position: relative;
-  margin-bottom: 20px;
+
   border-radius: 30px;
 }
 .chat-msg {
   clear: both;
+  margin-bottom: 3px;
+}
+.chat-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+.chat-msg.self > .cm-msg-text {
+  float: right;
+  margin-right: 10px;
 }
 .chat-msg.user > .cm-msg-text {
-  float: right;
   margin-right: 10px;
   background: #5a5eb9;
   color: white;
@@ -121,7 +178,7 @@
   height: 100%;
 }
 
-#chat-input {
+.chat-input {
   background: #031924;
   flex: 1;
   height: 47px;
@@ -129,24 +186,23 @@
   border: 1px solid #ccc;
   color: #888;
   border-top: none;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-radius: 12px;
 }
-#chat-input::-webkit-input-placeholder {
+.chat-input::-webkit-input-placeholder {
   color: #ccc;
 }
-#chat-input::-moz-placeholder {
+.chat-input::-moz-placeholder {
   color: #ccc;
 }
-#chat-input:-ms-input-placeholder {
+.chat-input:-ms-input-placeholder {
   color: #ccc;
 }
-#chat-input:-moz-placeholder {
+.chat-input:-moz-placeholder {
   color: #ccc;
 }
 .chat-submit {
-  bottom: 3px;
-  right: 10px;
+  top: 50%;
+  right: 0%;
   background: transparent;
   box-shadow: none;
   border: none;
@@ -155,6 +211,7 @@
   width: 35px;
   height: 35px;
   position: absolute;
+  transform: translate(-50%, -50%);
 }
 .chat-logs {
   padding: 15px;
@@ -210,9 +267,4 @@
   font-size: 50px;
   color: rgb(224, 220, 220);
   cursor: default;
-}
-@media screen and (max-width: 768px) {
-  .chatOnlineName {
-    display: none;
-  }
 }

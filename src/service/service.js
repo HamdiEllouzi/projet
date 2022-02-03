@@ -3,7 +3,7 @@ import { profileStore } from "../redux-toolkit/store/profile-store";
 import axios from "axios";
 
 const dbUrl = process.env.REACT_APP_DATA_BASE_URL;
-
+export const curentUser = JSON.parse(localStorage.getItem("User"));
 export const axiosReq = axios.create({
   baseURL: dbUrl,
 });
@@ -179,6 +179,28 @@ export const getConversation = (id) => {
       .catch((error) => reject(error.response));
   });
 };
+export const newConversation = (id) => {
+  return new Promise((resolve, reject) => {
+    axiosReq
+      .post(`/api/conversation/`, {
+        receiverId: id,
+      })
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch((error) => reject(error.response));
+  });
+};
+export const deleteConversation = (id) => {
+  return new Promise((resolve, reject) => {
+    axiosReq
+      .delete(`/api/conversation/${id}`)
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch((error) => reject(error.response));
+  });
+};
 
 export const getUserById = (id) => {
   return new Promise((resolve, reject) => {
@@ -199,5 +221,18 @@ export const getMessages = (id) => {
           resolve(data.data);
         })
         .catch((error) => reject(error.response));
+  });
+};
+export const sendMessages = (msg, conversationId) => {
+  return new Promise((resolve, reject) => {
+    axiosReq
+      .post(`/api/messages`, {
+        conversationId: conversationId,
+        msg: msg,
+      })
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch((error) => reject(error.response));
   });
 };
