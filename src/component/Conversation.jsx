@@ -10,7 +10,7 @@ export default function Conversation({ conversation, curentUser }) {
         setUser(data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, [conversation.members, curentUser._id]);
 

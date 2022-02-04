@@ -236,3 +236,14 @@ export const sendMessages = (msg, conversationId) => {
       .catch((error) => reject(error.response));
   });
 };
+
+export const searchUser = (name) => {
+  return new Promise((resolve, reject) => {
+    axiosReq
+      .get(`/api/searchuser/?userName=${name}`)
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch((error) => reject(error.data));
+  });
+};

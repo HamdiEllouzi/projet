@@ -11,24 +11,31 @@ import {
   curentUser,
   newConversation,
   deleteConversation,
+  searchUser,
 } from "../service/service";
 import { io } from "socket.io-client";
+import ListeFrend from "./ListeFrend";
 
 const ChatComponet = () => {
   const [conversation, setConversation] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [usersOnline, setUsersOnline] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchListOfFrend, setSearchListOfFrend] = useState([]);
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const scrollRef = useRef();
+  const wrapperRef = useRef(null);
   const socket = useRef();
   const ENDPOINT = "http://localhost:8000";
 
   useEffect(() => {
     socket.current = io(ENDPOINT);
+    document.addEventListener("mousedown", handleClickOutside);
     fetchConversation();
     return () => {
       socket.current.disconnect();
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -46,7 +53,6 @@ const ChatComponet = () => {
       });
       socket.current?.on("romeDeleted", (rome) => {
         fetchConversation();
-        console.log(rome);
         if (rome._id === currentChat?._id) {
           setCurrentChat(null);
           setMessage([]);
@@ -62,7 +68,7 @@ const ChatComponet = () => {
           setMessage(data);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
   }, [currentChat]);
 
@@ -70,13 +76,19 @@ const ChatComponet = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [message]);
 
+  useEffect(() => {
+    search &&
+      searchUser(search).then((freinds) => {
+        setSearchListOfFrend(freinds);
+      });
+  }, [search]);
   const fetchConversation = () => {
     getConversation(curentUser?._id)
       .then((conver) => {
         setConversation(conver);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
   const handelChange = (event) => {
@@ -91,7 +103,7 @@ const ChatComponet = () => {
         setNewMessage("");
         socket.current.emit("sendMessage", data.msg, reciverId);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   };
 
   const creatChatRomm = (id) => {
@@ -99,10 +111,11 @@ const ChatComponet = () => {
       .then((rome) => {
         setConversation([...conversation, rome]);
         setCurrentChat(rome);
+        setSearch("");
         socket.current.emit("newRome", rome, id);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error.data);
       });
   };
 
@@ -115,12 +128,20 @@ const ChatComponet = () => {
         setMessage([]);
         socket.current.emit("onDeleteRome", v, reciverId);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
+  };
+  const findFrends = (e) => {
+    setSearch(e.target.value);
   };
   function handleListKey(event) {
     if (event.key === "Enter") {
       event.preventDefault();
       onClick();
+    }
+  }
+  function handleClickOutside(event) {
+    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+      setSearch("");
     }
   }
   return (
@@ -129,7 +150,20 @@ const ChatComponet = () => {
       <div className='chat-box-body'>
         <div className='chatMenu'>
           <div className='chatMenuWrapper'>
-            <input className='chatMenuInput' placeholder='Search for freinds' />
+            <div className='searchFrends' ref={wrapperRef}>
+              <input className='chatMenuInput' value={search} placeholder='Search for freinds' onChange={findFrends} />
+              {search && (
+                <div className='content-list' id='list'>
+                  <ul className='drop-list'>
+                    {searchListOfFrend.map((frend, i) => (
+                      <div key={i} onClick={() => creatChatRomm(frend._id)}>
+                        <ListeFrend frend={frend} />
+                      </div>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
             {conversation.map((v, i) => (
               <div key={i} className='conversation-list'>
                 <div style={{ flexGrow: 1 }} onClick={() => setCurrentChat(v)}>
